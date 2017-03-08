@@ -20,7 +20,9 @@
   "devDependencies": {
     "ut-front": "~6.4.6",
     "ut-front-react": "~8.8.2",
-    "ut-tools": "^5.13.5"
+    "ut-tools": "^5.13.5",
+	"ut-test": "^5.0.0",
+	"ut-run": "^7.2.3"
   },
   "peerDependencies": {
     "ut-bus": "^5.8.2"
