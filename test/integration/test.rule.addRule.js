@@ -11,19 +11,12 @@ const OPERATIONSTARTDATE = ruleConstants.OPERATIONSTARTDATE;
 const OPERATIONENDDATE = ruleConstants.OPERATIONENDDATE;
 // var stdPolicy;
 const CITY = 'city';
-const CITY_SF = 'San Francisco';
 const REGION = 'region';
-const REGION_WEST = 'West';
 const COUNTRY = 'country';
-const COUNTRY_USA = 'United States of America';
 const CHANNEL = 'channel';
-const SELFSERVICEAPPCHANNEL = 'Self service app';
 const CURRENCY = 'currency';
-const CURRENCY_USD = 'USD';
-const CURRENCY_TZS = 'TZS';
 const OPERATION = 'operation';
-const OPERATION_DEPOSIT = 'Deposit / cash in';
-var cityId1, countryId1, regionId1, channelId1, currencyNameUSD, currencyNameTZS, operationDepositId;
+var cityId1, countryId1, regionId1, channelId1, currencyName1, currencyName2, operationId1;
 
 module.exports = function(opt, cache) {
     test({
@@ -54,7 +47,7 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(coreJoiValidation.validateFetchItemTranslation(result.itemTranslationFetch[0]).error, null, 'Return all details after listing itemName');
-                    countryId1 = result.itemTranslationFetch.find(item => item.itemName === COUNTRY_USA).itemNameId;
+                    countryId1 = result.itemTranslationFetch[0].itemNameId;
                 }),
                 commonFunc.createStep('core.itemTranslation.fetch', 'fetch regions', (context) => {
                     return {
@@ -62,7 +55,7 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(coreJoiValidation.validateFetchItemTranslation(result.itemTranslationFetch[0]).error, null, 'Return all details after listing itemName');
-                    regionId1 = result.itemTranslationFetch.find(item => item.itemName === REGION_WEST).itemNameId;
+                    regionId1 = result.itemTranslationFetch[0].itemNameId;
                 }),
                 commonFunc.createStep('core.itemTranslation.fetch', 'fetch cities', (context) => {
                     return {
@@ -70,7 +63,7 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(coreJoiValidation.validateFetchItemTranslation(result.itemTranslationFetch[0]).error, null, 'Return all details after listing itemName');
-                    cityId1 = result.itemTranslationFetch.find(item => item.itemName === CITY_SF).itemNameId;
+                    cityId1 = result.itemTranslationFetch[0].itemNameId;
                 }),
                 commonFunc.createStep('core.itemTranslation.fetch', 'fetch channels', (context) => {
                     return {
@@ -78,7 +71,7 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(coreJoiValidation.validateFetchItemTranslation(result.itemTranslationFetch[0]).error, null, 'Return all details after listing itemName');
-                    channelId1 = result.itemTranslationFetch.find(item => item.itemName === SELFSERVICEAPPCHANNEL).itemNameId;
+                    channelId1 = result.itemTranslationFetch[0].itemNameId;
                 }),
                 commonFunc.createStep('core.itemTranslation.fetch', 'fetch currencies', (context) => {
                     return {
@@ -86,8 +79,8 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(coreJoiValidation.validateFetchItemTranslation(result.itemTranslationFetch[0]).error, null, 'Return all details after listing itemName');
-                    currencyNameUSD = result.itemTranslationFetch.find(item => item.itemName === CURRENCY_USD).itemName;
-                    currencyNameTZS = result.itemTranslationFetch.find(item => item.itemName === CURRENCY_TZS).itemName;
+                    currencyName1 = result.itemTranslationFetch[0].itemName;
+                    currencyName2 = result.itemTranslationFetch[1].itemName;
                 }),
                 commonFunc.createStep('core.itemTranslation.fetch', 'fetch operations', (context) => {
                     return {
@@ -95,7 +88,7 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(coreJoiValidation.validateFetchItemTranslation(result.itemTranslationFetch[0]).error, null, 'Return all details after listing itemName');
-                    operationDepositId = result.itemTranslationFetch.find(item => item.itemName === OPERATION_DEPOSIT).itemNameId;
+                    operationId1 = result.itemTranslationFetch[0].itemNameId;
                 }),
                 commonFunc.createStep('rule.rule.add', 'add rule with all parameters', (context) => {
                     return {
@@ -109,7 +102,7 @@ module.exports = function(opt, cache) {
                             channelTag: '|ped|',
                             // channelRoleId:
                             channelId: channelId1, // channel type in the UI
-                            operationId: operationDepositId,
+                            operationId: operationId1,
                             operationTag: '|pos|',
                             operationStartDate: OPERATIONSTARTDATE,
                             operationEndDate: OPERATIONENDDATE,
@@ -134,7 +127,7 @@ module.exports = function(opt, cache) {
                             // destinationAccountId:
                         },
                         limit: [{
-                            currency: currencyNameUSD, // mandatory
+                            currency: currencyName1, // mandatory
                             minAmount: 10,
                             maxAmount: 200,
                             maxAmountDaily: 400,
@@ -157,7 +150,7 @@ module.exports = function(opt, cache) {
                                         minValue: 0,
                                         percent: 20,
                                         startAmount: 100, // mandatory
-                                        startAmountCurrency: currencyNameUSD, // mandatory,
+                                        startAmountCurrency: currencyName1, // mandatory,
                                         percentBase: 2 // TEST IT (operation value-percentBase)*percent
                                         // flatValue: 10!!! // TEST IT - in the documentation is mentioned flat amount but there is no such parameter in the response
                                     }],
@@ -175,7 +168,6 @@ module.exports = function(opt, cache) {
                     };
                 }, (result, assert) => {
                     assert.equals(ruleJoiValidation.validateAddRule(result).error, null, 'Return all detals after add rule');
-                    // console.log(result);
                 }),
                 commonFunc.createStep('rule.rule.add', 'successfully add rule with only priority', (context) => {
                     return {
@@ -193,7 +185,7 @@ module.exports = function(opt, cache) {
                             priority: PRIORITY - 2 // mandatory
                         },
                         limit: [{
-                            currency: currencyNameUSD // mandatory
+                            currency: currencyName1 // mandatory
                             // minAmount: 50, // ask if this should be mandatory as well (because of decision.fetch)
                             // maxAmount: 600 // ask if this should be mandatory as well (because of decision.fetch)
                         }],
@@ -205,7 +197,7 @@ module.exports = function(opt, cache) {
                                     },
                                     splitRange: [{
                                         startAmount: 100, // mandatory
-                                        startAmountCurrency: currencyNameUSD // mandatory
+                                        startAmountCurrency: currencyName1 // mandatory
                                     }],
                                     splitAssignment: [{
                                         credit: 'credit',
@@ -231,12 +223,12 @@ module.exports = function(opt, cache) {
                             channelOrganizationId: context['get admin details'].memberOF[0].object
                         },
                         limit: [{
-                            currency: currencyNameUSD,
+                            currency: currencyName1,
                             minAmount: 50,
                             maxAmount: 600
                         },
                         {
-                            currency: currencyNameTZS,
+                            currency: currencyName2,
                             minAmount: 50,
                             maxAmount: 600
                         }]
@@ -254,7 +246,7 @@ module.exports = function(opt, cache) {
                             channelOrganizationId: context['get admin details'].memberOF[0].object
                         },
                         limit: [{
-                            currency: currencyNameUSD, // mandatory
+                            currency: currencyName1, // mandatory
                             minAmount: 50,
                             maxAmount: 600
                         }],
@@ -270,21 +262,21 @@ module.exports = function(opt, cache) {
                                         minValue: 3,
                                         percent: 2,
                                         startAmount: 0, // mandatory
-                                        startAmountCurrency: currencyNameUSD // mandatory,
+                                        startAmountCurrency: currencyName1 // mandatory,
                                     },
                                     {
                                         maxValue: 20,
                                         minValue: 10,
                                         percent: 5,
                                         startAmount: 100, // mandatory
-                                        startAmountCurrency: currencyNameUSD // mandatory,
+                                        startAmountCurrency: currencyName1 // mandatory,
                                     },
                                     {
                                         maxValue: 30,
                                         minValue: 15,
                                         percent: 5,
                                         startAmount: 500, // mandatory
-                                        startAmountCurrency: currencyNameUSD // mandatory,
+                                        startAmountCurrency: currencyName1 // mandatory,
                                     }]
                                 }]
                             }
@@ -300,12 +292,12 @@ module.exports = function(opt, cache) {
                             priority: PRIORITY - 5
                         },
                         limit: [{
-                            currency: currencyNameUSD,
+                            currency: currencyName1,
                             minAmount: 40,
                             maxAmount: 700
                         },
                         {
-                            currency: currencyNameUSD,
+                            currency: currencyName1,
                             minAmount: 50,
                             maxAmount: 600
                         }]
@@ -317,7 +309,7 @@ module.exports = function(opt, cache) {
                 commonFunc.createStep('rule.decision.fetch', 'fetch decision rule', (context) => {
                     return {
                         amount: 200,
-                        currency: CURRENCY_USD
+                        currency: currencyName1
                     };
                 }, (result, assert) => {
                     // console.log(result);
