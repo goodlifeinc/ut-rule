@@ -56,12 +56,6 @@ module.exports = {
             }).allow(null)
         })
     },
-    'item.fetch': {
-        description: '',
-        notes: '',
-        params: joi.any(),
-        result: joi.any()
-    },
     'rule.fetch': {
         description: '',
         notes: '',
